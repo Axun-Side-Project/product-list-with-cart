@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'RedHatText';
+    src: url('/assets/fonts/RedHatText-VariableFont_wght.ttf');
+}
+
+@layer base {
+
+    body {
+        font-family: 'RedHatText';
+    }
+
+}
+
+@layer utilities {
+
+    .absolute-top-center {
+        @apply top-0 -translate-x-1/2 -translate-y-1/2 left-1/2;
+    }
+
+}
