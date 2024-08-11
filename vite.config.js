@@ -8,5 +8,5 @@ export default defineConfig({
   build: {
     outDir: 'docs',
   },
-  base: mode === 'production' ? '' : '.',
+  base: mode === 'production' ? 'https://axun-side-project.github.io/product-list-with-cart' : '/',
 })
