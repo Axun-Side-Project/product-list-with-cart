@@ -25,4 +25,20 @@ export default {
 		if (isDuplicate) commit("REMOVE_PRODUCT_FROM_CART", product);
 	},
 
+	handleProductQuantityUpdate({ state, commit }, product) {
+		commit("UPDATE_PRODUCT_QUANTITY", product);
+	},
+
+	handleShowModal({ state, commit }) {
+		commit("SHOW_MODAL");
+	},
+
+	handleCloseModal({ state, commit }) {
+		commit("CLOSE_MODAL");
+	},
+
+	resetSelectedProductList({ state, commit }) {
+		commit("RESET_CART");
+	},
+
 }

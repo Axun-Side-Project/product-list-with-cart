@@ -37,7 +37,6 @@
 import OrderCompleteModal from "@/components/OrderCompleteModal.vue";
 import Product from "@/components/Product.vue";
 import ProductCart from "@/components/ProductCart.vue";
-import productData from "@/data.json";
 
 export default {
   name: "App",
@@ -48,7 +47,7 @@ export default {
   },
   computed: {
     products() {
-      return productData;
+      return this.$store.getters["getProductList"];
     },
   },
 }
@@ -60,7 +59,7 @@ section.app {
   padding: 4rem;
   section.body {
     display: grid;
-    grid-template-columns: 3fr 1fr;
+    grid-template-columns: 5fr 2fr;
     column-gap: 4rem;
     h1.title {
       color: #27140E;
