@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path';
 
-const mode = 'dev';
+const mode = 'production';
 
 export default defineConfig({
   plugins: [vue()],
