@@ -1,75 +1,152 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 z-50 flex items-center justify-center">
-    <div class="fixed inset-0 bg-black opacity-50" @click="close"></div>
-    <div class="z-10 p-8 bg-white rounded shadow-lg min-w-[24rem]">
-      <h2 class="text-3xl font-bold">Order Confirmed</h2>
-      <p class="text-sm text-gray-400">We hope you enjoy your food!</p>
-      <div class="flex flex-col mt-4 rounded bg-gray-50">
-
-        <div v-for="product in selectedProduct" class="flex items-center justify-between gap-x-8">
-            <div class="grid grid-cols-[50px_1fr] gap-x-6 p-4">
-                <div>
-                    <img class="object-cover w-full h-full" :src="product.image.thumbnail" alt="thumbnail">
-                </div>
-                <div class="grid grid-rows-2">
-                    <p class="font-bold">{{ product.name }}</p>
-                    <div class="flex items-center justify-start gap-x-4">
-                        <p class="text-sm font-bold text-orange-700">{{ product.quantity }}x</p>
-                        <p class="text-sm text-gray-400">@{{ formatterPrice(product.price) }}</p>
-                    </div>
-                </div>
-            </div>
-            <p class="pr-6 text-sm font-bold">
-                {{ formatterPrice(product.price * product.quantity) }}
-            </p>
-        </div>
-
-        <div class="flex items-center justify-between p-4">
-          <p>Order Total:</p>
-          <p class="text-2xl font-bold">{{ formatterPrice(getOrderTotal()) }}</p>
-        </div>
-      </div>
-      <button @click="close" class="w-full px-4 py-2 mt-4 text-white bg-orange-700 rounded-3xl">
-        Start New Order
-      </button>
-    </div>
-  </div>
+	<section class="background" v-if="isShowModal">
+		<div class="modal">
+			<i><img class="confirmed-icon" :src="order_confirmed_icon" alt=""></i>
+			<h1>Order Confirmed</h1>
+			<h6>We hope you enjoy your food!</h6>
+			<section class="product-list">
+				<div class="product" v-for="product in products">
+					<section style="display: flex; column-gap: 1rem;">
+						<img :src="product.image.thumbnail" alt="">
+						<div style="display: flex; flex-direction: column; justify-content: space-between">
+							<p style="font-size: 0.9rem; font-weight: 500;">{{ product.name }}</p>
+							<div style="display: flex; column-gap: 1rem;">
+								<p style="color: #8C240D;">{{ product.quantity }}x</p>
+								<p style="">@{{ formattedPrice(product.price) }}</p>
+							</div>
+						</div>
+					</section>
+					<div>
+						{{ formattedPrice(product.price * product.quantity) }}
+					</div>
+				</div>
+			</section>
+			<section class="order-total">
+				<p class="text">Order Total</p>
+				<p class="price">{{ formattedPrice(totalPrice) }}</p>
+			</section>
+			<button class="new-order" @click.stop="handleNewOrder">
+				Start New Order
+			</button>
+		</div>
+	</section>
 </template>
 
-<script setup>
-import { ref, toRefs } from "vue";
+<script>
+import order_confirmed_icon from "/assets/images/icon-order-confirmed.svg";
 
-const props = defineProps({
-  isVisible: {
-    type: Boolean,
-    default: false,
-  },
-  selectedProduct: {
-    type: Array,
-    default: () => [],
-  },
-});
-
-const emit = defineEmits(["close"]);
-
-function close() {
-  emit("close");
+export default {
+	name: "OrderCompleteModal",
+	data() {
+		return {
+			order_confirmed_icon: order_confirmed_icon,
+		};
+	},
+	methods: {
+		formattedPrice(price) {
+			return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+    	}).format(price);
+		},
+		handleNewOrder() {
+			this.$store.dispatch("handleCloseModal");
+			this.$store.dispatch("resetSelectedProductList");
+		},
+	},
+	computed: {
+		isShowModal() {
+			return this.$store.getters["isShowModal"];
+		},
+		products() {
+      return this.$store.getters["getSelectedProductList"];
+    },
+		totalPrice() {
+			const orderList = this.$store.getters["getSelectedProductList"];
+			let totalPrice = 0;
+			orderList.map(product => {
+				totalPrice += product.quantity * product.price;
+			});
+			return totalPrice;
+		},
+	},
 }
-
-function formatterPrice(price) {
-  return price.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-}
-
-function getOrderTotal() {
-  let orderTotal = 0;
-  props.selectedProduct.forEach((product) => {
-    orderTotal += product.price * product.quantity;
-  });
-  return orderTotal;
-}
-
-const { selectedProduct } = toRefs(props);
 </script>
+
+<style lang="scss" scoped>
+section.background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	background: #000000aa;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	div.modal {
+		background: white;
+		padding: 2rem;
+		width: 30vw;
+		border-radius: .5rem;
+		img.confirmed-icon {
+			width: 2.4rem;
+			margin-bottom: 1.2rem;
+		}
+		h1 {
+			font-size: 2rem;
+			font-weight: bold;
+		}
+		h6 {
+			color: #888;
+		}
+		section.product-list {
+			background: #FCF8F5;
+			margin-top: 1rem;
+			padding: 0 1.4rem;
+			max-height: 40vh;
+			overflow: auto;
+			&::-webkit-scrollbar {
+				display: none;
+			}
+			div.product {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 1.2rem 0;
+				border-bottom: 1px solid #ccc;
+				img {
+					width: 3.6rem;
+				}
+			}
+		}
+		section.order-total {
+			background: #FCF8F5;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 1.8rem 1.4rem;
+			margin-bottom:  2rem;
+			p.text {
+				font-size: 0.9rem;
+			}
+			p.price {
+				font-size: 1.4rem;
+				font-weight: bold;
+			}
+		}
+		button.new-order {
+			color: white;
+			background: orangered;
+			width: 100%;
+			padding: 0.8rem 1.4rem;
+			border-radius: 2rem;
+			&:hover {
+				background: #b83100;
+			}
+		}
+	}
+}
+</style>

@@ -1,63 +1,77 @@
-<script setup>
-import ProductList from './components/ProductList.vue';
-import ProductCart from './components/ProductCart.vue';
-import OrderCompleteModal from './components/OrderCompleteModal.vue';
-import data from './data.json';
-import { ref } from 'vue';
-
-const products = ref(data);
-const selectedProduct = ref([]);
-const isModalVisible = ref(false);
-
-function showModal() {
-  isModalVisible.value = true;
-}
-
-function handleAddToCart(product) {
-  selectedProduct.value.push(product);
-  console.log(selectedProduct.value.length);
-}
-
-function handleRemoveFromCart(productToRemove) {
-  selectedProduct.value = selectedProduct.value.filter(product => product.name !== productToRemove.name);
-  console.log(selectedProduct.value.length);
-}
-
-function handleUpdateCart(updatedProduct) {
-  const existingProductIndex = selectedProduct.value.findIndex(p => p.name === updatedProduct.name);
-  if (existingProductIndex !== -1) {
-    selectedProduct.value[existingProductIndex] = updatedProduct;
-  } else {
-    selectedProduct.value.push(updatedProduct);
-  }
-}
-
-</script>
-
 <template>
-  <div class="p-16 bg-background grid grid-cols-[3fr_1fr] gap-x-8">
+
+  <section class="app">
     
-    <section>
+    <!-- Modal -->
+    <OrderCompleteModal />
+  
+    <!-- Body -->
+    
+    <section class="body">
+      
+      <!-- Product Area -->
+      <div>
 
-      <h1 class="text-4xl font-bold">Desserts</h1>
-
-      <div class="grid grid-cols-3 mt-4 gap-x-8 gap-y-8">
-        <ProductList v-for="product in products"
-          :key="product.id" 
-          :product="product"
-          @add-to-cart="handleAddToCart"
-          @remove-from-cart="handleRemoveFromCart"
-          @updateCart="handleUpdateCart"
-        />
+        <h1 class="title">Desserts</h1>
+  
+        <section class="product-list">
+          <Product
+            v-for="product in products"
+            :key="product.name"
+            :product="product"
+          />
+        </section>
+      
       </div>
-
+      
+      <!-- Cart -->
+      <ProductCart />
+  
     </section>
 
-    <ProductCart :selectedProduct="selectedProduct" @completeOrder="showModal"/>
-    <OrderCompleteModal :selectedProduct="selectedProduct" :isVisible="isModalVisible" @close="isModalVisible = false"/>
-  </div>
+  </section>
+
 </template>
 
-<style scoped>
+<script lang="ts">
+import OrderCompleteModal from "@/components/OrderCompleteModal.vue";
+import Product from "@/components/Product.vue";
+import ProductCart from "@/components/ProductCart.vue";
 
+export default {
+  name: "App",
+  components: {
+    OrderCompleteModal,
+    Product,
+    ProductCart,
+  },
+  computed: {
+    products() {
+      return this.$store.getters["getProductList"];
+    },
+  },
+}
+</script>
+
+<style style="scss" scoped>
+section.app {
+  background: #FCF8F5;
+  padding: 4rem;
+  section.body {
+    display: grid;
+    grid-template-columns: 5fr 2fr;
+    column-gap: 4rem;
+    h1.title {
+      color: #27140E;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    section.product-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+}
 </style>
