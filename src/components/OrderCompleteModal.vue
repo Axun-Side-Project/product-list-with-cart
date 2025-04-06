@@ -149,4 +149,13 @@ section.background {
 		}
 	}
 }
+
+@media screen and (max-width: 970px) {
+  section.background {
+    align-items: flex-end;
+    div.modal {
+      width: 100vw;
+    }
+  }
+}
 </style>

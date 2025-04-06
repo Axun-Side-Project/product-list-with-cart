@@ -74,4 +74,33 @@ section.app {
     }
   }
 }
+@media screen and (max-width: 970px) {
+  section.app {
+    section.body {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+  }
+}
+
+@media screen and (min-width: 720px) and (max-width: 970px) {
+  section.app {
+    section.body {
+      section.product-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 720px) {
+  section.app {
+    section.body {
+      section.product-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}
 </style>
